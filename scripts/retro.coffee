@@ -2,8 +2,8 @@
 #   Record and retrieve comments for retro 
 #
 # Commands:
-#   [good|bad|park]: some comment - store a comment
-#   hubot retro 1/1 - show all comments since 1/1
+#   [good|bad|park]: <comment> - store a comment
+#   hubot retro <month>/<day>[/<year>] - show all comments since <month>/<day>[/<year>]
 
 module.exports = (robot) ->
 
@@ -20,7 +20,7 @@ module.exports = (robot) ->
       type: msg.match[1]
       message: msg.match[2]
 
-    msg.send "Noted, #{msg.message.user.name}, I'll remember that for retro. Enter \"hubot retro month/day[/year]\" to see all retro comments since a given date."
+    msg.send "Noted, #{msg.message.user.name}, I'll remember that for retro. Enter \"hubot retro <month>/<day>[/<year>]\" to see all retro comments since a given date."
 
   robot.respond /retro (.*)$/i, (msg) ->
 
@@ -30,7 +30,7 @@ module.exports = (robot) ->
     year = parseInt(date_arr[2])
 
     if isNaN(month) || isNaN(day)
-      msg.send "Please secifify a start date as month/day or month/day/year"
+      msg.send "Please secifify a start date as <month>/<day> or <month>/<day>/<year>"
       return
 
     today = new Date()
