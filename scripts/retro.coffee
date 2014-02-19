@@ -4,6 +4,7 @@
 # Commands:
 #   [good|bad|park]: <comment> - store a comment
 #   hubot retro <month>/<day>[/<year>] - show all comments since <month>/<day>[/<year>]
+#   hubot retro <month>/<day>[/<year>] <month>/<day>[/<year>] - show all comments between the given dates
 
 module.exports = (robot) ->
 
@@ -20,42 +21,34 @@ module.exports = (robot) ->
       type: msg.match[1]
       message: msg.match[2]
 
-    msg.send "Noted, #{msg.message.user.name}, I'll remember that for retro. Enter \"hubot retro <month>/<day>[/<year>]\" to see all retro comments since a given date."
+    msg.send "Noted, #{msg.message.user.name}, I'll remember that for retro. Enter \"hubot retro <start_date> [<end_date>]\" to see all retro comments between the given dates. Date format: <month>/<day>[/<year>]"
 
-  robot.respond /retro (.*)$/i, (msg) ->
+  robot.respond /retro\s+([^\s]+)\s?([^\s]+)?$/i, (msg) ->
 
-    date_arr = msg.match[1].split('/')
-    month = parseInt(date_arr[0]) - 1
-    day = parseInt(date_arr[1])
-    year = parseInt(date_arr[2])
-
-    if isNaN(month) || isNaN(day)
-      msg.send "Please secifify a start date as <month>/<day> or <month>/<day>/<year>"
+    start_date = date_from_string(msg.match[1])
+    unless start_date?
+      msg.send "Please specify a start date as <month>/<day> or <month>/<day>/<year>"
       return
 
-    today = new Date()
+    end_date = new Date()
+    end_date_string = msg.match[2]
+    if end_date_string?
+      end_date = date_from_string(end_date_string)
+      unless end_date
+        msg.send "Please specify the end date as <month>/<day> or <month>/<day>/<year> or leave emtpy for the current date"
+        return
 
-    if isNaN(year)
-      if month <= today.getMonth()
-        year = today.getFullYear()
-      else
-        year = today.getFullYear() - 1
-    else
-      if year < 100
-        year += (Math.floor(today.getFullYear() / 100) * 100)
-
-    date = new Date(year, month, day)
-    msg.send "Showing retro comments since #{date}.\n"
+    msg.send "Showing retro comments from #{start_date} to #{end_date}.\n"
 
     items = {}
     items.good = []
     items.bad = []
     items.park = []
 
-    while date < today
+    while start_date < end_date
       day_list = null
       try 
-        day_list = @robot.brain.data.retro[date.getFullYear()][date.getMonth()][date.getDate()]
+        day_list = @robot.brain.data.retro[start_date.getFullYear()][start_date.getMonth()][start_date.getDate()]
       catch 
         # do nothing
 
@@ -63,7 +56,7 @@ module.exports = (robot) ->
         for item in day_list
           items[item.type].push item
 
-      date.setDate(date.getDate() + 1)
+      start_date.setDate(start_date.getDate() + 1)
 
     string = ''
     string += "\nGood\n"
@@ -76,6 +69,28 @@ module.exports = (robot) ->
     string += "  #{item.user}:#{item.message}\n" for item in items.park
 
     msg.send string
+
+date_from_string = (string) ->
+  date_arr = string.split('/')
+  month = parseInt(date_arr[0]) - 1
+  day = parseInt(date_arr[1])
+  year = parseInt(date_arr[2])
+  today = new Date()
+
+  if isNaN(month) || isNaN(day)
+    return null
+
+  if isNaN(year)
+    if month <= today.getMonth()
+      year = today.getFullYear()
+    else
+      year = today.getFullYear() - 1
+  else
+    if year < 100
+      year += (Math.floor(today.getFullYear() / 100) * 100)
+
+  new Date(year, month, day)
+
 
 
 regex = new RegExp /^(good|bad|park)\:(.*)$/
