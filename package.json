@@ -1,35 +1,31 @@
 {
-  "name": "hosted-hubot",
-  "version": "2.6.3",
-
-  "author": "GitHub Inc.",
-
+  "name": "hubot-retro",
+  "version": "1.0.2",
+  "description": "Keep track of hubot comments",
+  "main": "index.coffee",
+  "author": {
+    "name": "Jonathan Slate",
+    "email": "jonathan@slatefamily.net",
+    "url": "https://github.com/jslate"
+  },
   "keywords": [
-    "github",
     "hubot",
-    "campfire",
-    "bot"
+    "hubot-scripts",
+    "git",
+    "branch"
   ],
-
-  "description": "A simple helpful robot for your Company",
-
-  "licenses": [{
-    "type": "MIT",
-    "url": "https://github.com/github/hubot/raw/master/LICENSE"
-  }],
-
-  "repository" : {
+  "license": "MIT",
+  "homepage": "https://github.com/jslate/hubot-retro",
+  "repository": {
     "type": "git",
-    "url": "https://github.com/github/hubot.git"
+    "url": "https://github.com/jslate/hubot-retro.git"
   },
-
+  "bugs": {
+    "url": "https://github.com/jslate/hubot-retro/issues"
+  },
   "dependencies": {
-    "hubot":         ">= 2.6.0 < 3.0.0",
-    "hubot-scripts": ">= 2.5.0 < 3.0.0"
+    "hubot": ">= 2.4.3",
+    "coffee-script": "~1.6"
   },
-
-  "engines": {
-    "node": ">= 0.8.x",
-    "npm":  ">= 1.1.x"
-  }
+  "devDependencies": {}
 }
