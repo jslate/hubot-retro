@@ -23,7 +23,7 @@ module.exports = (robot) ->
 
     msg.send "Noted, #{msg.message.user.name}, I'll remember that for retro. Enter \"hubot retro <start_date> [<end_date>]\" to see all retro comments between the given dates. Date format: <month>/<day>[/<year>]"
 
-  robot.respond /retro\s+([^\s]+)\s?([^\s]+)?$/i, (msg) ->
+  robot.respond /retro\s*([^\s]+)?\s?([^\s]+)?$/i, (msg) ->
 
     start_date = date_from_string(msg.match[1])
     unless start_date?
@@ -71,6 +71,7 @@ module.exports = (robot) ->
     msg.send string
 
 date_from_string = (string) ->
+  return unless string?
   date_arr = string.split('/')
   month = parseInt(date_arr[0]) - 1
   day = parseInt(date_arr[1])
