@@ -8,21 +8,12 @@
 
 module.exports = (robot) ->
 
-  robot.hear regex, (msg) ->
-    type = msg.match[0]
-    date = new Date()
-    
-    @robot.brain.data.retro ||= {}
-    @robot.brain.data.retro[date.getFullYear()] ||= {}
-    @robot.brain.data.retro[date.getFullYear()][date.getMonth()] ||= {}
-    @robot.brain.data.retro[date.getFullYear()][date.getMonth()][date.getDate()] ||= []
-    @robot.brain.data.retro[date.getFullYear()][date.getMonth()][date.getDate()].push
-      user: msg.message.user.name
-      type: msg.match[1]
-      message: msg.match[2]
+  # old colon syntax
+  robot.hear /^(good|bad|park)\:(.*)$/, handle_comment
 
-    msg.send "Noted, #{msg.message.user.name}, I'll remember that for retro. Enter \"hubot retro <start_date> [<end_date>]\" to see all retro comments between the given dates. Date format: <month>/<day>[/<year>]"
-
+  # Andy's requested "hubot good ..." syntax
+  robot.respond /(good|bad|park)(.*)$/i, handle_comment
+  
   robot.respond /retro\s*([^\s]+)?\s?([^\s]+)?$/i, (msg) ->
 
     start_date = date_from_string(msg.match[1])
@@ -92,9 +83,21 @@ date_from_string = (string) ->
 
   new Date(year, month, day)
 
+handle_comment = (msg) ->
+  type = msg.match[0]
+  date = new Date()
+  
+  @robot.brain.data.retro ||= {}
+  @robot.brain.data.retro[date.getFullYear()] ||= {}
+  @robot.brain.data.retro[date.getFullYear()][date.getMonth()] ||= {}
+  @robot.brain.data.retro[date.getFullYear()][date.getMonth()][date.getDate()] ||= []
+  @robot.brain.data.retro[date.getFullYear()][date.getMonth()][date.getDate()].push
+    user: msg.message.user.name
+    type: msg.match[1]
+    message: msg.match[2]
 
+  msg.send "Noted, #{msg.message.user.name}, I'll remember that for retro! Enter \"hubot retro <start_date> [<end_date>]\" to see all retro comments between the given dates. Date format: <month>/<day>[/<year>]"
 
-regex = new RegExp /^(good|bad|park)\:(.*)$/
 
 
 
