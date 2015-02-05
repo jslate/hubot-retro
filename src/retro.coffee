@@ -1,5 +1,5 @@
 # Description:
-#   Record and retrieve comments for retro 
+#   Record and retrieve comments for retro
 #
 # Commands:
 #   [good|bad|park]: <comment> - store a comment
@@ -13,7 +13,7 @@ module.exports = (robot) ->
 
   # Andy's requested "hubot good ..." syntax
   robot.respond /(good|bad|park)(.*)$/i, handle_comment
-  
+
   robot.respond /retro\s*([^\s]+)?\s?([^\s]+)?$/i, (msg) ->
 
     start_date = date_from_string(msg.match[1])
@@ -38,9 +38,9 @@ module.exports = (robot) ->
 
     while start_date < end_date
       day_list = null
-      try 
+      try
         day_list = @robot.brain.data.retro[start_date.getFullYear()][start_date.getMonth()][start_date.getDate()]
-      catch 
+      catch
         # do nothing
 
       if day_list?
@@ -86,7 +86,7 @@ date_from_string = (string) ->
 handle_comment = (msg) ->
   type = msg.match[0]
   date = new Date()
-  
+
   @robot.brain.data.retro ||= {}
   @robot.brain.data.retro[date.getFullYear()] ||= {}
   @robot.brain.data.retro[date.getFullYear()][date.getMonth()] ||= {}
@@ -96,11 +96,4 @@ handle_comment = (msg) ->
     type: msg.match[1]
     message: msg.match[2]
 
-  msg.send "Noted, #{msg.message.user.name}, I'll remember that for retro! Enter \"hubot retro <start_date> [<end_date>]\" to see all retro comments between the given dates. Date format: <month>/<day>[/<year>]"
-
-
-
-
-
-
-
+  msg.send "Noted, #{msg.message.user.name}, I'll remember that for retro!"
