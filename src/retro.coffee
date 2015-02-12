@@ -110,7 +110,6 @@ handle_comment = (msg) ->
   date = new Date()
   
   @robot.brain.data.retro ||= {}
-  @robot.brain.data.retro ||= {}
   @robot.brain.data.retro[date.getFullYear()] ||= {}
   @robot.brain.data.retro[date.getFullYear()][date.getMonth()] ||= {}
   @robot.brain.data.retro[date.getFullYear()][date.getMonth()][date.getDate()] ||= []
