@@ -46,10 +46,10 @@ module.exports = (robot) ->
     items.bad = []
     items.park = []
 
-    while start_date < end_date
+    while start_date <= end_date
       day_list = null
       try 
-        day_list = @robot.brain.data.retro[msg.message.room][start_date.getFullYear()][start_date.getMonth()][start_date.getDate()]
+        day_list = @robot.brain.data.retro[start_date.getFullYear()][start_date.getMonth()][start_date.getDate()]
       catch 
         # do nothing
 
@@ -99,7 +99,8 @@ date_from_string = (string) ->
 
 days_ago = (days) ->
   milliseconds_per_day = 86400000
-  new Date(+new Date - milliseconds_per_day * (days - 1))
+  d = new Date(+new Date - milliseconds_per_day * (days - 1))
+  new Date(1900 + d.getYear(), d.getMonth(), d.getDate())
 
 weeks_ago = (weeks) ->
   days_ago(weeks * 7)
@@ -109,11 +110,11 @@ handle_comment = (msg) ->
   date = new Date()
   
   @robot.brain.data.retro ||= {}
-  @robot.brain.data.retro[msg.message.room] ||= {}
-  @robot.brain.data.retro[msg.message.room][date.getFullYear()] ||= {}
-  @robot.brain.data.retro[msg.message.room][date.getFullYear()][date.getMonth()] ||= {}
-  @robot.brain.data.retro[msg.message.room][date.getFullYear()][date.getMonth()][date.getDate()] ||= []
-  @robot.brain.data.retro[msg.message.room][date.getFullYear()][date.getMonth()][date.getDate()].push
+  @robot.brain.data.retro ||= {}
+  @robot.brain.data.retro[date.getFullYear()] ||= {}
+  @robot.brain.data.retro[date.getFullYear()][date.getMonth()] ||= {}
+  @robot.brain.data.retro[date.getFullYear()][date.getMonth()][date.getDate()] ||= []
+  @robot.brain.data.retro[date.getFullYear()][date.getMonth()][date.getDate()].push
     user: msg.message.user.name
     type: msg.match[1]
     message: msg.match[2]
