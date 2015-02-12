@@ -3,6 +3,7 @@
 #
 # Commands:
 #   [good|bad|park]: <comment> - store a comment
+#   hubot retro - show all comments in the last 2 weeks
 #   hubot retro <month>/<day>[/<year>] - show all comments since <month>/<day>[/<year>]
 #   hubot retro <month>/<day>[/<year>] <month>/<day>[/<year>] - show all comments between the given dates
 
@@ -16,20 +17,29 @@ module.exports = (robot) ->
   
   robot.respond /retro\s*([^\s]+)?\s?([^\s]+)?$/i, (msg) ->
 
-    start_date = date_from_string(msg.match[1])
-    unless start_date?
-      msg.send "Please specify a start date as <month>/<day> or <month>/<day>/<year>"
-      return
-
     end_date = new Date()
-    end_date_string = msg.match[2]
-    if end_date_string?
-      end_date = date_from_string(end_date_string)
-      unless end_date
-        msg.send "Please specify the end date as <month>/<day> or <month>/<day>/<year> or leave emtpy for the current date"
+
+    if (!msg.match[1]?)
+      start_date = weeks_ago(2)
+    else if msg.match[2]?.match(/weeks?/)
+      start_date = weeks_ago(parseInt(msg.match[1]))
+    else if msg.match[2]?.match(/days?/)
+      start_date = days_ago(parseInt(msg.match[1]))
+    else
+      start_date = date_from_string(msg.match[1])
+      unless start_date?
+        msg.send "Please specify a start date as <month>/<day>, <month>/<day>/<year>, <number> weeks, <number> days, or just leave blank for default 2 weeks"
         return
 
-    msg.send "Showing retro comments from #{start_date} to #{end_date}.\n"
+      end_date_string = msg.match[2]
+      if end_date_string?
+        end_date = date_from_string(end_date_string)
+        unless end_date
+          msg.send "Please specify the end date as <month>/<day> or <month>/<day>/<year> or leave emtpy for the current date"
+          return
+
+
+    msg.send "Showing retro comments from #{start_date.toLocaleDateString("en-US")} to #{end_date.toLocaleDateString("en-US")}.\n"
 
     items = {}
     items.good = []
@@ -63,6 +73,10 @@ module.exports = (robot) ->
 
 date_from_string = (string) ->
   return unless string?
+
+  weeks_arr = string.match(/(\d)\s*\weeks?/)
+  return weeks_ago(weeks_arr[1]) if weeks_arr?
+
   date_arr = string.split('/')
   month = parseInt(date_arr[0]) - 1
   day = parseInt(date_arr[1])
@@ -82,6 +96,13 @@ date_from_string = (string) ->
       year += (Math.floor(today.getFullYear() / 100) * 100)
 
   new Date(year, month, day)
+
+days_ago = (days) ->
+  milliseconds_per_day = 86400000
+  new Date(+new Date - milliseconds_per_day * (days - 1))
+
+weeks_ago = (weeks) ->
+  days_ago(weeks * 7)
 
 handle_comment = (msg) ->
   type = msg.match[0]
