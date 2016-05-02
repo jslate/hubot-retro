@@ -1,7 +1,7 @@
 hubot-retro
 =================
 
-Record and retrieve comments for retro in hubot
+Record and retrieve comments for retro in hubot. Now records/shows comments for the current channel.
 
 Commands:
 
