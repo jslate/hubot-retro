@@ -61,17 +61,19 @@ module.exports = (robot) ->
 
       start_date.setDate(start_date.getDate() + 1)
 
-    string = ''
-    string += "\nGood\n"
-    string += "  #{item.user}:#{item.message} #{if item.channel then '' else '(channel unknown)'}\n" for item in items.good
+    item_arrays = []
+    item_arrays = item_arrays.concat ["\nGood"]
+    item_arrays = item_arrays.concat get_items_string(items.good)
+    item_arrays = item_arrays.concat ["\nBad"]
+    item_arrays = item_arrays.concat get_items_string(items.bad)
+    item_arrays = item_arrays.concat ["\nPark"]
+    item_arrays = item_arrays.concat get_items_string(items.park)
 
-    string += "\nBad\n"
-    string += "  #{item.user}:#{item.message} #{if item.channel then '' else '(channel unknown)'}\n" for item in items.bad
+    msg.send item_arrays.join("\n")
 
-    string += "\nPark\n"
-    string += "  #{item.user}:#{item.message} #{if item.channel then '' else '(channel unknown)'}\n" for item in items.park
+get_items_string = (items) ->
+  "#{item.user}:#{item.message} #{if item.channel then '' else '(channel unknown)'}" for item in items
 
-    msg.send string
 
 get_channel = (response) ->
   if response.message.room == response.message.user.name
