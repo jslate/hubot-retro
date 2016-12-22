@@ -57,7 +57,7 @@ module.exports = (robot) ->
 
       if day_list?
         for item in day_list
-          items[item.type].push item
+          items[item.type.toLowerCase()].push item
 
       start_date.setDate(start_date.getDate() + 1)
 
