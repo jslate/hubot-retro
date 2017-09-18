@@ -75,8 +75,11 @@ get_items_string = (items) ->
   "#{item.user}:#{item.message} #{if item.channel then '' else '(channel unknown)'}" for item in items
 
 get_channel_name = (response, robot) ->
-  channel_id = get_channel_id(response)
-  robot.adapter.client.rtm.dataStore.getChannelById(channel_id).name
+  channel_id = response.message.room
+  if channel_id == response.message.user.name
+    channel_id
+  else
+    robot.adapter.client.rtm.dataStore.getChannelById(channel_id).name
 
 get_channel_id = (response) ->
   if response.message.room == response.message.user.name
