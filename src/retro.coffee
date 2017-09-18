@@ -122,7 +122,7 @@ handle_comment = (msg) ->
   type = msg.match[0]
   date = new Date()
   channel_id = get_channel_id(msg)
-  channel_name = @robot.adapter.client.rtm.dataStore.getChannelById(get_channel_id(msg)).name
+  channel_name = get_channel_name(msg, @robot)
 
   @robot.brain.data.retro ||= {}
   @robot.brain.data.retro[channel_id] ||= {}
