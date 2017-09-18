@@ -49,7 +49,7 @@ module.exports = (robot) ->
     while start_date <= end_date
       day_list = null
       try
-        day_list = @robot.brain.data.retro[get_channel(msg)][start_date.getFullYear()][start_date.getMonth()][start_date.getDate()] || []
+        day_list = @robot.brain.data.retro[get_channel_id(msg)][start_date.getFullYear()][start_date.getMonth()][start_date.getDate()] || []
         # add any left over items from before we started recording the channel
         day_list = day_list.concat(@robot.brain.data.retro[start_date.getFullYear()][start_date.getMonth()][start_date.getDate()] || [])
       catch
@@ -74,8 +74,11 @@ module.exports = (robot) ->
 get_items_string = (items) ->
   "#{item.user}:#{item.message} #{if item.channel then '' else '(channel unknown)'}" for item in items
 
+get_channel_name = (response, robot) ->
+  channel_id = get_channel_id(response)
+  robot.adapter.client.rtm.dataStore.getChannelById(room).name
 
-get_channel = (response) ->
+get_channel_id = (response) ->
   if response.message.room == response.message.user.name
     "@#{response.message.room}"
   else
@@ -118,16 +121,18 @@ weeks_ago = (weeks) ->
 handle_comment = (msg) ->
   type = msg.match[0]
   date = new Date()
+  channel_id = get_channel_id(msg)
+  channel_name = @robot.adapter.client.rtm.dataStore.getChannelById(get_channel_id(msg)).name
 
   @robot.brain.data.retro ||= {}
-  @robot.brain.data.retro[get_channel(msg)] ||= {}
-  @robot.brain.data.retro[get_channel(msg)][date.getFullYear()] ||= {}
-  @robot.brain.data.retro[get_channel(msg)][date.getFullYear()][date.getMonth()] ||= {}
-  @robot.brain.data.retro[get_channel(msg)][date.getFullYear()][date.getMonth()][date.getDate()] ||= []
-  @robot.brain.data.retro[get_channel(msg)][date.getFullYear()][date.getMonth()][date.getDate()].push
+  @robot.brain.data.retro[channel_id] ||= {}
+  @robot.brain.data.retro[channel_id][date.getFullYear()] ||= {}
+  @robot.brain.data.retro[channel_id][date.getFullYear()][date.getMonth()] ||= {}
+  @robot.brain.data.retro[channel_id][date.getFullYear()][date.getMonth()][date.getDate()] ||= []
+  @robot.brain.data.retro[channel_id][date.getFullYear()][date.getMonth()][date.getDate()].push
     user: msg.message.user.name
     type: msg.match[1]
     message: msg.match[2]
-    channel: get_channel(msg)
+    channel: channel_name
 
-  msg.send "Noted, #{msg.message.user.name} in #{get_channel(msg)}, I'll remember that for retro!"
+  msg.send "foo Noted, #{msg.message.user.name} in #{channel_name}, I'll remember that for retro!"
