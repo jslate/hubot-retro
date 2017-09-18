@@ -135,4 +135,4 @@ handle_comment = (msg) ->
     message: msg.match[2]
     channel: channel_name
 
-  msg.send "foo Noted, #{msg.message.user.name} in #{channel_name}, I'll remember that for retro!"
+  msg.send "Noted, #{msg.message.user.name} in #{channel_name}, I'll remember that for retro!"
