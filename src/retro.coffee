@@ -76,7 +76,7 @@ get_items_string = (items) ->
 
 get_channel_name = (response, robot) ->
   channel_id = get_channel_id(response)
-  robot.adapter.client.rtm.dataStore.getChannelById(room).name
+  robot.adapter.client.rtm.dataStore.getChannelById(channel_id).name
 
 get_channel_id = (response) ->
   if response.message.room == response.message.user.name
