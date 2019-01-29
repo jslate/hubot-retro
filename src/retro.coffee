@@ -2,7 +2,7 @@
 #   Record and retrieve comments for retro
 #
 # Commands:
-#   [good|bad|park]: <comment> - store a comment
+#   [good|bad|park|goal]: <comment> - store a comment
 #   hubot retro - show all comments in the last 2 weeks
 #   hubot retro <month>/<day>[/<year>] - show all comments since <month>/<day>[/<year>]
 #   hubot retro <month>/<day>[/<year>] <month>/<day>[/<year>] - show all comments between the given dates
@@ -10,10 +10,10 @@
 module.exports = (robot) ->
 
   # old colon syntax
-  robot.hear /^(good|bad|park)\:(.*)$/, handle_comment
+  robot.hear /^(good|bad|park|goal)\:(.*)$/, handle_comment
 
   # Andy's requested "hubot good ..." syntax
-  robot.respond /(good|bad|park)(.*)$/i, handle_comment
+  robot.respond /(good|bad|park|goal)(.*)$/i, handle_comment
 
   robot.respond /retro\s*([^\s]+)?\s?([^\s]+)?$/i, (msg) ->
 
@@ -45,6 +45,7 @@ module.exports = (robot) ->
     items.good = []
     items.bad = []
     items.park = []
+    items.goal = []
 
     while start_date <= end_date
       day_list = null
@@ -68,6 +69,8 @@ module.exports = (robot) ->
     item_arrays = item_arrays.concat get_items_string(items.bad)
     item_arrays = item_arrays.concat ["\nPark"]
     item_arrays = item_arrays.concat get_items_string(items.park)
+    item_arrays = item_arrays.concat ["\nGoal"]
+    item_arrays = item_arrays.concat get_items_string(items.goal)
 
     msg.send item_arrays.join("\n")
 
